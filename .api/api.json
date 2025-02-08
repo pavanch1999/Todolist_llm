@@ -1,0 +1,11 @@
+{
+  "version": "1.0",
+  "apis": [
+    {
+      "identifier": "vext",
+      "source": "@vext/v1.0#9xe7a27m1yh27vr",
+      "integrity": "sha512-WDSgiIPTVOtiL8e5NJ9aohqnzuKfixVBv8AmWT/oVii46sOSpJBzCbNtQ7rtu9lWGvaRKCQNgk+j3hdZm7eDYA==",
+      "installerVersion": "6.1.2"
+    }
+  ]
+}

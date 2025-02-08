@@ -1,0 +1,236 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Vext Query API",
+    "version": "unknown"
+  },
+  "servers": [
+    {
+      "url": "https://payload.vextapp.com"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "sec0": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Apikey",
+        "x-default": "Api-Key <API_KEY>"
+      }
+    }
+  },
+  "security": [
+    {
+      "sec0": []
+    }
+  ],
+  "paths": {
+    "/hook/{endpoint_id}/catch/{channel_token}": {
+      "post": {
+        "summary": "Project HTTP Request",
+        "description": "This API invokes the specified project, processes the provided payload, and generates a result based on the project’s logic.",
+        "operationId": "http-request-query",
+        "parameters": [
+          {
+            "name": "endpoint_id",
+            "in": "path",
+            "description": "The unique identifier of your HTTP request endpoint. Find this ID via your project > API Access",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          },
+          {
+            "name": "channel_token",
+            "in": "path",
+            "description": "Mandatory for message retrieval and memory use. This can be user id or session id from your app, or a fixed string.",
+            "schema": {
+              "type": "string"
+            },
+            "required": true
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "payload"
+                ],
+                "properties": {
+                  "payload": {
+                    "type": "string",
+                    "description": "This is the input that you'll be sending to your LLM pipeline"
+                  },
+                  "custom_variables": {
+                    "type": "object",
+                    "description": "If you have custom input parameters defined, you should include it here",
+                    "properties": {
+                      "custom_input": {
+                        "type": "string",
+                        "description": "The `{custom_input}` will be defined by you via the Vext platform, and there could be multiple instances of such inputs."
+                      }
+                    }
+                  },
+                  "long_polling": {
+                    "type": "boolean",
+                    "description": "If your pipeline includes several models and you're facing timeout issues, enabling this option will generate a 'request_id' for you."
+                  },
+                  "request_id": {
+                    "type": "string",
+                    "description": "Include the long_polling request ID in the body to receive updates until the final result is delivered."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Result": {
+                    "value": "{\n  \"text\": \"According to the information provided, the IT person in the organization is Emily Turner, who holds the role of Systems Analyst. Her email address is emily.turner@company.com.\",\n  \"citation\": {\n    // The amount for sources depends on the \"top K\" settings in your Data Set\n    \"sources\": [\n      {\n        \"source_id\": \"{uuid}\",\n        \"source_url\": \"file url\",\n        \"source_name\": \"file name\",\n        \"source_chunk\": \"file chunk\",\n        \"vector_ids\": \"{uuid}\"\n      },\n      {\n        \"source_id\": \"{uuid}\",\n        \"source_url\": \"file url\",\n        \"source_name\": \"file name\",\n        \"source_chunk\": \"file chunk\",\n        \"vector_ids\": \"{uuid}\"\n      }\n    ],\n    \"source_deduplicate\": [\n      {\n        \"source_id\": \"{uuid}\",\n        \"source_url\": \"file url\",\n        \"source_name\": \"file name\"\n      }\n    ],\n    \"score\": 0.80\n  },\n  \"custom_output_1\": \"Custom output you defined in the output component\",\n  \"custom_output_2\": \"Custom output you defined in the output component\",\n  \"request_id\": \"{uuid}\"\n}"
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "example": "According to the information provided, the IT person in the organization is Emily Turner, who holds the role of Systems Analyst. Her email address is emily.turner@company.com."
+                    },
+                    "citation": {
+                      "type": "object",
+                      "properties": {
+                        "sources": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "source_id": {
+                                "type": "string",
+                                "example": "{uuid}"
+                              },
+                              "source_url": {
+                                "type": "string",
+                                "example": "file url"
+                              },
+                              "source_name": {
+                                "type": "string",
+                                "example": "file name"
+                              },
+                              "source_chunk": {
+                                "type": "string",
+                                "example": "file chunk"
+                              },
+                              "vector_ids": {
+                                "type": "string",
+                                "example": "{uuid}"
+                              }
+                            }
+                          }
+                        },
+                        "source_deduplicate": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "source_id": {
+                                "type": "string",
+                                "example": "{uuid}"
+                              },
+                              "source_url": {
+                                "type": "string",
+                                "example": "file url"
+                              },
+                              "source_name": {
+                                "type": "string",
+                                "example": "file name"
+                              }
+                            }
+                          }
+                        },
+                        "score": {
+                          "type": "number",
+                          "example": 0.8,
+                          "default": 0
+                        }
+                      }
+                    },
+                    "custom_output_1": {
+                      "type": "string",
+                      "example": "Custom output you defined in the output component"
+                    },
+                    "custom_output_2": {
+                      "type": "string",
+                      "example": "Custom output you defined in the output component"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "{uuid}"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "202": {
+            "description": "202",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Result": {
+                    "value": "{\n    \"text\": \"processing on action number #X\"\n}"
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "example": "processing on action number #X"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "examples": {
+                  "Result": {
+                    "value": "{\n    \"text\": \"result of request_id: xxxxxxxx has expired\",\n    \"request_id\": \"xxxxxxxx\"\n}"
+                  }
+                },
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string",
+                      "example": "result of request_id: xxxxxxxx has expired"
+                    },
+                    "request_id": {
+                      "type": "string",
+                      "example": "xxxxxxxx"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "x-readme": {
+    "headers": []
+  },
+  "x-readme-fauxas": true
+}
